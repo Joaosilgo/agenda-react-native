@@ -1,0 +1,12 @@
+{
+  "name": "agenda-react-native",
+  "displayName": "agenda-react-native",
+  "expo": {
+    "name": "agenda-react-native",
+    "slug": "agenda-react-native",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
