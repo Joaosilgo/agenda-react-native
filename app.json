@@ -5,8 +5,37 @@
     "name": "agenda-react-native",
     "slug": "agenda-react-native",
     "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/react-logo.png",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "splash": {
+      "image": "./assets/react-logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFFFF"
+    },
+    "primaryColor": "#dddddd",
+    "privacy": "public",
+    "androidNavigationBar": {
+      "barStyle": "light-content"
+    
+    },
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
   }
 }

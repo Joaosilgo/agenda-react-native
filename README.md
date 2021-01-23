@@ -1,13 +1,8 @@
-{
-  "main": "index.js",
-  "scripts": {
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
-    "web": "expo start --web",
-    "start": "react-native start",
-    "test": "jest"
-  },
-  "dependencies": {
+
+# Agenda
+
+````json
+"dependencies": {
     "@gorhom/bottom-sheet": "^2.0.4",
     "@react-native-community/masked-view": "0.1.10",
     "@react-navigation/bottom-tabs": "^5.11.3",
@@ -29,17 +24,16 @@
     "react-native-screens": "~2.15.0",
     "react-native-shared-element": "0.7.0",
     "react-native-unimodules": "~0.12.0",
-    "react-native-web": "~0.13.12",
-    "@react-native-community/datetimepicker": "3.0.4"
-  },
-  "devDependencies": {
-    "@babel/core": "~7.9.0",
-    "babel-jest": "~25.2.6",
-    "jest": "~25.2.6",
-    "react-test-renderer": "~16.13.1"
-  },
-  "jest": {
-    "preset": "react-native"
-  },
-  "private": true
-}
+    "react-native-web": "~0.13.12"
+  }
+````
+
+````bash
+echo "# agenda-react-native" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/Joaosilgo/agenda-react-native.git
+git push -u origin main
+````
