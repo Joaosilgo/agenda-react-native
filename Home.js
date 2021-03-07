@@ -1,10 +1,15 @@
-import React, { useState, Component } from "react";
+import React, { useState, useEffect, Component } from "react";
 import { createStackNavigator } from '@react-navigation/stack';
-import {Share, FlatList, SafeAreaView, StatusBar, StyleSheet, Text, View, TouchableOpacity, ImageBackground, Dimensions, ScrollView, Alert, Image, Button, ToastAndroid, Vibration, Platform } from "react-native";
+import { Share, FlatList, SafeAreaView, StatusBar, StyleSheet, RefreshControl, Text, View, TouchableOpacity, ImageBackground, Dimensions, ScrollView, Alert, Image, Button, ToastAndroid, Vibration, Platform } from "react-native";
 import { sizes, lightColors } from './colorThemes';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import Event from './Event'
 import moment from "moment"
+import FormMemo from './FormMemo'
+
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -61,68 +66,225 @@ const DATA = [
     }
 ];
 
+const getAllKeys = async () => {
+    //AsyncStorage.clear();
+    let keys = []
+    try {
+        keys = await AsyncStorage.getAllKeys()
+    } catch (e) {
+        // read key error
+    }
+
+    console.log(keys.length)
+
+    // example console.log result:
+    // ['@MyApp_user', '@MyApp_key']
+}
+
+const removeValue = async (key) => {
+    try {
+        await AsyncStorage.removeItem(key)
+    } catch (e) {
+        // remove error
+    }
+
+    console.log('Done.')
+}
+
+const importData = async () => {
+    try {
+        //  const keys = await AsyncStorage.getAllKeys();
+        //  const result = await AsyncStorage.multiGet(keys);
+
+
+
+
+
+        /*   for (var key of result.values()) {
+               console.log(key);
+             } */
+        /*
+                  const newArray = [];
+                  this.DATA.forEach(obj => {
+                    if (!newArray.some(o => o.name === obj.name)) {
+                      newArray.push({ ...obj })
+                    }
+               
+                  });
+        */
+
+        /*
+               for (let inKey of keys) {
+                let obj = await AsyncStorage.getItem(inKey);
+                obj = JSON.parse(obj);
+                data.push(obj); 
+        
+                */
+
+
+        const data = [];
+
+        /* const listData = [];
+         let keys = await AsyncStorage.getAllKeys();
+         keys.forEach(async function (inKey) {
+             const person = await AsyncStorage.getItem(inKey);
+            var x = listData.push(JSON.parse(person));
+            console.log(x.toString());
+         });*/
+        let keys = await AsyncStorage.getAllKeys();
+        for (let inKey of keys) {
+            let obj = await AsyncStorage.getItem(inKey);
+            obj = JSON.parse(obj);
+            data.push(obj);
+        }
+        //   for (var [key, value] of result) {
+
+
+
+        // console.log(key + " = " + value);
+        // DATA.push(JSON.parse(value))
+
+
+
+        // data.push(JSON.parse(value))
+
+
+        /* for (var i = 0; i < DATA.length; i++) {
+             
+             if (DATA[i].id === key) {
+                 DATA.pop(JSON.parse(value))
+                 console.log(DATA[i])
+             }
+ 
+         } */
+
+
+        //DATA.push(JSON.parse(value))
+        /*   data.forEach(function(value){
+               if (DATA.indexOf(value)==-1) DATA.push(value);
+             });
+           
+           */
+
+
+
+        /* for (var x = 0; x < DATA.length; x++) {
+ 
+         }*/
+
+
+        // const Data = DATA.concat(data)
+        /*
+        for (var x = 0; x < DATA.length; x++) {
+
+            for (var i = 0; i < data.length; i++) {
+
+                if (data[i].id === DATA[x].id) {
+                    DATA.pop(JSON.parse(value))
+                    console.log(DATA[i])
+                }
+
+            }
+
+        }
+        */
+
+
+
+
+
+        //var x = JSON.stringify(DATA);
+        // console.log(JSON.parse(x));
+        // console.log(DATA.keys);
+        // return result;
+       //  console.log(data);
+
+        return data;
+
+    } catch (error) {
+        console.error(error)
+    }
+}
+
 function DetailsScreen({ route, navigation }) {
 
     /* 2. Get the param */
-
-
-
     const { id } = route.params;
+    const { title } = route.params;
     const { data } = route.params;
     const { image } = route.params;
-    const { title } = route.params;
-
+    const { description } = route.params;
+    const { notes } = route.params;
+    const { alert } = route.params;
+    const { date } = route.params;
+    var notification = String(alert);
     var images = [];
 
     for (let i = 0; i < 10; i++) {
         images.push(<Image key={i} source={{ uri: image }} style={styles.image} />);
     }
 
-
     const onShare = async () => {
         try {
-          const result = await Share.share({
-            title: title,
-            message:  title + '  |  ' + '08 : 24 :36 Time Remaining',
-              url: image
-          });
-          if (result.action === Share.sharedAction) {
-            if (result.activityType) {
-              // shared with activity type of result.activityType
-            } else {
-              // shared
-              if (Platform.OS === 'android') {
-                Vibration.vibrate([50, 50]);
-                ToastAndroid.showWithGravity('Sharing!!!', ToastAndroid.SHORT, ToastAndroid.CENTER)
-              }
+            const result = await Share.share({
+                title: title,
+                message: title + '  |  ' + date + ' Time Remaining',
+                url: image
+            });
+            if (result.action === Share.sharedAction) {
+                if (result.activityType) {
+                    // shared with activity type of result.activityType
+                } else {
+                    // shared
+                    if (Platform.OS === 'android') {
+                        Vibration.vibrate([50, 50]);
+                        ToastAndroid.showWithGravity('Sharing!!!', ToastAndroid.SHORT, ToastAndroid.CENTER)
+                    }
+                }
+            } else if (result.action === Share.dismissedAction) {
+                // dismissed
             }
-          } else if (result.action === Share.dismissedAction) {
-            // dismissed
-          }
         } catch (error) {
-          alert(error.message);
+            alert(error.message);
         }
-      };
+    };
 
     return (
         <ScrollView showsVerticalScrollIndicator={false}>
             <Image source={{ uri: image }} resizeMode="contain" style={{ width, height: height / 2.8 }} />
             <View style={styles.product}>
                 <Text style={{ fontSize: sizes.h2, fontWeight: 'bold', color: lightColors.primary }}> {title} </Text>
-                <View style={{ flex: 0, flexDirection: 'row', marginTop: sizes.base, marginBottom: sizes.base, marginLeft: sizes.base, marginRight: sizes.base }} >
-                    <Text style={styles.tag}><MaterialCommunityIcons name="bell-ring" size={sizes.caption} /> {data} </Text>
-                </View>
+
+                <TouchableOpacity onPress={() => removeValue(id).then(navigation.navigate('Home'))}>
+                    <View style={{ flex: 0, flexDirection: 'row', marginTop: sizes.base, marginBottom: sizes.base, marginLeft: sizes.base, marginRight: sizes.base }} >
+                        <Text style={styles.tag}><MaterialCommunityIcons name="delete-variant" size={sizes.caption} /> DELETE </Text>
+                    </View>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => console.log('Alert')}>
+                    <View style={{ flex: 0, flexDirection: 'row', marginTop: sizes.base, marginBottom: sizes.base, marginLeft: sizes.base, marginRight: sizes.base }} >
+                        <ImageBackground
+                            style={styles.tag}
+                            imageStyle={{ borderRadius: sizes.base }}
+                            source={{ uri: image }}
+                        ><View  ><Text style={{ color: lightColors.background }} > {alert ? <MaterialCommunityIcons name="alarm-bell" size={sizes.caption} color={lightColors.background} /> : <MaterialCommunityIcons name="bell-cancel" size={sizes.caption} color={lightColors.background} />}   Notification </Text></View></ImageBackground>
+                    </View>
+                </TouchableOpacity>
+
                 <TouchableOpacity onPress={onShare}>
                     <View style={{ flex: 0, flexDirection: 'row', marginTop: sizes.base, marginBottom: sizes.base, marginLeft: sizes.base, marginRight: sizes.base }} >
                         <Text style={styles.tag}><MaterialCommunityIcons name="share-variant" size={sizes.caption} /> Share </Text>
                     </View>
                 </TouchableOpacity>
-                <Text style={{ color: lightColors.text, height: 22, fontWeight: "200" }}  >{data}</Text>
-                <Text style={{ color: lightColors.text, height: 22, fontWeight: "200" }}  ><Event /></Text>
+                <Text style={{ color: lightColors.text, height: 22, fontWeight: "200" }}  > {data}</Text>
+                <Text style={{ color: lightColors.text, height: 22, fontWeight: "200" }}  > {/* <Event /> */}</Text>
+                <Text style={{ color: lightColors.text, height: 22, fontWeight: "200" }}  > {date}</Text>
+                <Text style={{ color: lightColors.text, height: 22, fontWeight: "200" }}  > {description}</Text>
+                <Text style={{ color: lightColors.text, height: 22, fontWeight: "200" }}  > {notes}</Text>
                 {/*  <View style={{ style: styles.divider, marginTop: sizes.padding * 0.9, marginBottom: sizes.padding * 0.9, marginLeft: sizes.padding * 0.9, marginRight: sizes.padding * 0.9 }}  ></View>*/}
                 <View style={styles.divider} ></View>
                 <View>
-                    <Text style={{ fontWeight: '500', color: lightColors.primary }}>Gallery</Text>
+                    <Text style={{ fontWeight: '500', color: lightColors.primary }}> Gallery </Text>
                     <View style={{ flexDirection: 'row', style: styles.divider, marginTop: sizes.padding * 0.9, marginBottom: sizes.padding * 0.9, marginLeft: sizes.padding * 0.9, marginRight: sizes.padding * 0.9 }}   >
 
                         {images.slice(1, 3)}
@@ -132,51 +294,33 @@ function DetailsScreen({ route, navigation }) {
                         </View>
                     </View>
                 </View>
-
             </View>
         </ScrollView>
     )
 }
 
 //const Item = ({ item, onPress, style, navigation }) => (
-const Item = ({ item, navigation }) => (
+const Item = ({ item, date, alert, navigation }) => (
     /*<TouchableOpacity onPress={onPress} style={[styles.item, style]}>       <Text style={styles.title}>{item.title}</Text>*/
-    <TouchableOpacity activeOpacity={0.9} accessible={true}
-        accessibilityLabel="Tap me!" accessibilityLabel="Memo" accessibilityHint="Navigates to the previous screen"
-        accessibilityActions={[
-            { name: 'cut', label: 'cut' },
-            { name: 'copy', label: 'copy' },
-            { name: 'paste', label: 'paste' }
-        ]}
-        onAccessibilityAction={(event) => {
-            switch (event.nativeEvent.actionName) {
-                case 'cut':
-                    Alert.alert('Alert', 'cut action success');
-                    break;
-                case 'copy':
-                    Alert.alert('Alert', 'copy action success');
-                    break;
-                case 'paste':
-                    Alert.alert('Alert', 'paste action success');
-                    break;
-            }
-        }}
-        // onPress={onPress} 
-        style={{ paddingVertical: 20 }}
+    <TouchableOpacity activeOpacity={0.9} accessible={true} accessibilityLabel="Tap me!" accessibilityLabel="Memo" accessibilityHint="Navigates to the previous screen" style={{ paddingVertical: 20 }}
         onPress={() =>
             /* 1. Navigate to the Details route with params */
             navigation.navigate('Details', {
-                id: 1,
+                id: item.id,
                 data: 'Something',
                 image: item.preview,
-                title: item.title
+                title: item.title,
+                description: item.description,
+                notes: item.notes,
+                alert: item.alert,
+                date: date,
             })
-        }  >
+        }>
         <ImageBackground style={[styles.flex, styles.destination, styles.shadow]} imageStyle={{ borderRadius: 20 }} source={{ uri: item.preview }}>
             <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center' }}>
                 <Text style={{ fontSize: sizes.h3, fontWeight: '500', color: lightColors.background }}>{item.title}</Text>
-                <Text style={{ fontSize: sizes.h1, fontWeight: 'bold', color: lightColors.background }}>
-                    <MaterialCommunityIcons name="clock-fast" style={{ fontWeight: 'bold' }} size={sizes.h1} color={lightColors.background} /> <Event /></Text>
+                <Text style={{ fontSize: sizes.base, fontWeight: 'bold', color: lightColors.background }}>
+                    <MaterialCommunityIcons name="clock-fast" style={{ fontWeight: 'bold' }} size={sizes.h1} color={lightColors.background} /> {date} </Text>
                 <Text style={{ fontSize: sizes.h3, fontWeight: '500', color: lightColors.background }}> <MaterialCommunityIcons name="bell-ring" style={{ fontWeight: 'bold' }} size={sizes.h1} color={lightColors.background} /></Text>
             </View>
         </ImageBackground>
@@ -185,15 +329,46 @@ const Item = ({ item, navigation }) => (
 
 function HomeScreen({ route, navigation }) {
 
+    const [refreshing, setRefreshing] = useState(false);
+    const [data, setData] = useState([]);
+
+
+    importData().then(items => setData(items));
+
+
+    /*
+    
+        
+    
+       */
+
+
+    /* setTimeout(function () {
+         setData(DATA);
+     }.bind(this), 1000); */
+
+
+    // useEffect(() => {
+    // Update the document title using the browser API
+    //  setData(importData())
+
+    //  importData();
+    //  },[]);
+
+
+
+
 
     const [toggleHorizontal, setoggleHorizontal] = useState(false);
     //const Home  = ({ navigation }) => {
     const [selectedId, setSelectedId] = useState(null);
     const time = moment().format('ll');
     const renderHeader = () => {
+        // getAllKeys();
+
         return (
             <View style={{ flex: 0, alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', style: styles.header, }} >
-                <Text style={{ color: '#d7dbdd', fontSize: 40 }}>{time}</Text>
+                <Text style={{ color: '#d7dbdd', fontSize: 35, fontWeight: '500' }}>{time}</Text>
                 <TouchableOpacity>
                     <View style={styles.avatar}>
                         <MaterialCommunityIcons name="webpack" color={'#283747'} size={40} />
@@ -205,32 +380,65 @@ function HomeScreen({ route, navigation }) {
 
 
     const renderItem = ({ item }) => {
-        const backgroundColor = item.id === selectedId ? "#d7dbdd" : "#d7dbdd";
-        //const { toggleHorizontal } = this.state;
-        return (
-            <Item
-                item={item}
-                //  onPress={() => setSelectedId(item.id)}
-                navigation={navigation}
-                onPress={() =>
 
-                    //  setSelectedId(item.id)
-                    /* 1. Navigate to the Details route with params */
-                    navigation.navigate('Details', {
+        if (item !== null) {
 
-                        id: 1,
-                        data: 'Something',
-                        item: item
-
-                    })
-                }
-
-            //  style={{ backgroundColor }}
+            const backgroundColor = item.id === selectedId ? "#d7dbdd" : "#d7dbdd";
+            const DateParse = new Date(item.date)
+            const count = moment().add(1, 'seconds'); //.add({ days: DateParse.getDay(), hours: DateParse.getHours(), minutes: DateParse.getMinutes(), seconds: DateParse.getSeconds() })
+            const alertNotification = Boolean(item.alert)
 
 
-            />
-        );
+            var eventTime = 1366549200; // Timestamp - Sun, 21 Apr 2013 13:00:00 GMT
+            var currentTime = 1366547400; // Timestamp - Sun, 21 Apr 2013 12:30:00 GMT
+            var diffTime = eventTime - currentTime;
+            var duration = moment.duration(diffTime * 1000, 'milliseconds');
+
+            // Date.parse(item.date)
+            //const { toggleHorizontal } = this.state;
+            return (
+                <Item
+                    item={item}
+                    date={DateParse.toISOString()}
+                    alert={alertNotification}
+                    //  onPress={() => setSelectedId(item.id)}
+                    navigation={navigation}
+                    onPress={() =>
+                        //  setSelectedId(item.id)
+                        /* 1. Navigate to the Details route with params */
+                        navigation.navigate('Details', {
+                            id: item.id,
+                            data: 'Something',
+                            item: item
+                        })
+                    }
+
+                //  style={{ backgroundColor }}
+
+
+                />
+            );
+
+        }
     };
+
+
+
+    const renderEmptyContainer = () => {
+
+        return (
+            <View style={{ flex: 0, marginTop: sizes.base, marginBottom: sizes.base, marginLeft: sizes.base, marginRight: sizes.base, color: lightColors.text, fontWeight: "bold", fontSize: 20, alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ color: lightColors.text, height: 25, fontWeight: "bold", fontSize: 20, alignItems: 'center', justifyContent: 'center' }}  > Such Empty Mutch Meaning!!! WOW</Text>
+                <Image  style={{width: 100, height: 100, tintColor: '#d7dbdd'}}  source={require('./assets/doge.png')} />
+            </View>
+        )
+
+    }
+
+
+
+
+
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -245,17 +453,41 @@ function HomeScreen({ route, navigation }) {
             </View>
             <SafeAreaView style={styles.container}>
                 <FlatList
-                    data={DATA}
-                    renderItem={renderItem}
-                    keyExtractor={(item) => item.id}
-                    extraData={selectedId}
+                    data={data}
+                    renderItem={
+                        renderItem
+                    }
+                    // keyExtractor={(item) => item.id}
+                    // keyExtractor={(item, index) => index.toString()}
+                    keyExtractor={(item) => {
+                        if (item !== null) {
+                            item.id.toString();;
+                        }
+                    }}
+                    // extraData={selectedId}
                     showsVerticalScrollIndicator={false}
                     showsHorizontalScrollIndicator={false}
                     scrollEventThrottle={16}
                     bounces={false}
                     horizontal={toggleHorizontal}
+                    //  onRefresh={() => setRefreshing( !refreshing)}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={() => importData()}
+                        />
+
+                    }
+                    refreshing={refreshing}
+                    ListEmptyComponent={renderEmptyContainer}
                 />
             </SafeAreaView>
+            <TouchableOpacity onPress={() =>
+                /* 1. Navigate to the Details route with params */
+                //onPress={() => console.log('Pressed')}
+                navigation.navigate('Countdown')} style={{ position: 'absolute', borderRadius: 45, width: 50, height: 50, zIndex: 50, right: 30, bottom: 30, alignItems: 'center', elevation: 20 }} >
+                <AntDesign name="pluscircle" color='#283747' size={45} />
+            </TouchableOpacity>
         </SafeAreaView>
     );
     //};
@@ -293,6 +525,46 @@ function MemoStack() {
 
 
                     },
+
+                    // headerRight: () => ( <MaterialCommunityIcons  onPress={() => console.log('Pressed')} name="dots-vertical" color={'#d7dbdd'} size={30} /> ),
+                    headerRight: () => (
+                        <TouchableOpacity onPress={() => console.log('Pressed')}>
+                            <MaterialCommunityIcons name="dots-vertical" color={'#d7dbdd'} size={30} />
+                        </TouchableOpacity>
+                    ),
+                    headerBackImage: () => (<MaterialCommunityIcons name="keyboard-backspace" color={'#d7dbdd'} size={30} />),
+
+                    headerBackTitle: null,
+                    headerLeftContainerStyle: {
+                        alignItems: "center",
+                        marginLeft: sizes.base * 2,
+                        paddingRight: sizes.base
+                    },
+                    headerRightContainerStyle: {
+                        alignItems: "center",
+                        paddingRight: sizes.base,
+
+                    }
+
+
+                }}
+            />
+            <Stack.Screen
+                name="Countdown"
+                title=""
+                component={FormMemo}
+                options={{
+                    title: '',
+                    headerStyle: {
+                        height: sizes.base * 4,
+                        backgroundColor: '#FFFFFF', // or 'white
+                        borderBottomColor: "transparent",
+                        elevation: 0// for android
+
+
+
+                    },
+
                     // headerRight: () => ( <MaterialCommunityIcons  onPress={() => console.log('Pressed')} name="dots-vertical" color={'#d7dbdd'} size={30} /> ),
                     headerRight: () => (
                         <TouchableOpacity onPress={() => console.log('Pressed')}>
@@ -325,7 +597,6 @@ export default function Memos() {
         <MemoStack />
     );
 };
-
 
 const styles = StyleSheet.create({
     header: {

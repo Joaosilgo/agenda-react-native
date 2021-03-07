@@ -7,6 +7,12 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from "moment";
 // constants
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import uuid from 'react-native-uuid';
+
+import { createStackNavigator } from "@react-navigation/stack";
+import * as RootNavigation from './App';
+
 const servers = [
     {
         name: "Default",
@@ -109,7 +115,7 @@ export const Time = () => {
 
                     <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', padding: 16 }}    >
                         <Text style={{ color: '#d7dbdd' }}>Date</Text>
-                        <TouchableOpacity onPress={showDatepicker} title="Show date picker!" ><Text style={{ color: '#d7dbdd' }}>{date.toDateString()}</Text></TouchableOpacity>
+                        <TouchableOpacity onPress={showDatepicker} title="Show date picker!" ><Text style={{ color: '#d7dbdd' }}>{/* {date.toDateString()} */}</Text></TouchableOpacity>
                         <TouchableOpacity onPress={showDatepicker} title="Show date picker!" ><MaterialCommunityIcons name="calendar-clock" color={lightColors.primary} size={30} /></TouchableOpacity>
                     </View>
                 </View>
@@ -117,7 +123,7 @@ export const Time = () => {
 
                     <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', padding: 16 }}    >
                         <Text style={{ color: '#d7dbdd' }}>Time</Text>
-                        <TouchableOpacity onPress={showTimepicker} title="Show time picker!" ><Text style={{ color: '#d7dbdd' }}>{date.toLocaleTimeString()}</Text></TouchableOpacity>
+                        <TouchableOpacity onPress={showTimepicker} title="Show time picker!" ><Text style={{ color: '#d7dbdd' }}>{/* {date.toLocaleTimeString()} */}</Text></TouchableOpacity>
                         <TouchableOpacity onPress={showTimepicker} title="Show time picker!" ><MaterialCommunityIcons name="timer" color={lightColors.primary} size={30} /></TouchableOpacity>
                     </View>
 
@@ -154,7 +160,7 @@ export default class FormMemo extends Component {
         this.page = 1;
         this.state = {
             connected: false,
-            server: null,
+
             showServers: false,
             // automatic: {
             //     name: "Default",
@@ -169,6 +175,8 @@ export default class FormMemo extends Component {
                 alt_description: ""
             },
 
+            server: this.automatic,
+
             searchFocus: new Animated.Value(0.6),
             searchString: null,
             data: [],
@@ -176,17 +184,142 @@ export default class FormMemo extends Component {
             isRefreshing: false,
             toggleHorizontal: false,
 
+            name: "",
+            preview: null,
+            date: new Date(),
+
+
+
+
+            //TIME
+            mode: 'date',
+            show: false,
+            //TIME
+
+            obj: {
+                id: uuid.v1(),
+                title: "",
+                preview: "https://images.unsplash.com/photo-1592754099136-4b447d9bfd15?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80",
+                description: "",
+                notes: "",
+
+                date: new Date(),
+                alert: false
+
+            }
             //  dateString: moment(new Date()).format('YYYY-MM-DD'),
             // date: this.props.date || new Date(),
-
-
             //date: moment(new Date()).format('YYYY-MM-DD'),
-
-
-
         };
+        /*
+                const [memo, setMemo] = useState(null);
+                
+                const Armazenar = (key, valor) => {
+                    AsyncStorage.setItem(key, valor);
+                }
+        
+                const Buscar = async (key) => {
+        
+                    const valor = await AsyncStorage.getItem(key);
+                    setMemo(valor);
+                }
+        
+                Armazenar('01', 'Memo');
+        
+                Buscar('01');
+        */
+
 
     }
+
+
+    //TIME
+
+    onChange = (event, selectedDate) => {
+        const currentDate = selectedDate || this.state.obj.date;
+        this.setState({
+            show: false,
+        })
+        this.setState(prevState => ({
+            // copy all other key-value pairs of food object
+            obj: {
+                ...prevState.obj,
+                date: currentDate,
+                // update value of specific key
+            }
+        }))
+    };
+
+    showMode = (currentMode) => {
+        this.setState({
+            show: true,
+            mode: currentMode
+        })
+    };
+
+    showDatepicker = () => {
+        this.showMode('date');
+    };
+
+    showTimepicker = () => {
+        this.showMode('time');
+    };
+
+
+
+
+
+    //TIME
+
+    async save(key, value) {
+        try {
+            const jsonValue = JSON.stringify(value)
+            const jsonKey = JSON.stringify(key)
+            await AsyncStorage.setItem(key, jsonValue);
+            RootNavigation.navigate('Home')
+
+        } catch (error) {
+            console.log("Error saving data" + error);
+        }
+    }
+
+
+    validateForm() {
+
+       // var noti = this.state.obj.alert;
+        
+        this.setState(prevState => ({
+            // copy all other key-value pairs of food object
+            
+            obj: {                     // specific object of food object
+                ...prevState.obj,
+                id: uuid.v1(),  // copy all pizza key-value pairs
+                title: this.state.name,
+                date: this.state.obj.date,
+                //alert: this.state.obj.alert.toString()
+                // update value of specific kesy
+            }
+
+        }))
+
+        if (!this.state.obj.title.toString().trim()) {
+            alert('Please Enter Name');
+            return;
+        }
+        else {
+            this.save(this.state.obj.id, this.state.obj).then(console.log(this.state.obj));
+        }
+    }
+
+    async getKey(key) {
+        try {
+            const value = await AsyncStorage.getItem(key);
+            this.setState({ obj: value });
+        } catch (error) {
+            console.log("Error retrieving data" + error);
+        }
+    }
+
 
     componentDidMount() {
         this.FetchImages();
@@ -247,7 +380,7 @@ export default class FormMemo extends Component {
         fetch("https://api.unsplash.com/collections/59171832/photos?&per_page=100&client_id=3hHcOZv49kdRv__cCxTxMr86y91cBB1fj3hmJovDcA8")
             .then(response => response.json())
             .then((responseJson) => {
-                console.log('getting data from fetch', responseJson)
+                //  console.log('getting data from fetch', responseJson)
                 this.setState({
                     isLoading: false,
                     isRefreshing: false,
@@ -267,6 +400,15 @@ export default class FormMemo extends Component {
     handleServer(server) {
         this.setState({ server, connected: false, showServers: false });
         //   this.goForFetch()
+        this.setState(prevState => ({
+            // copy all other key-value pairs of food object
+            obj: {                     // specific object of food object
+                ...prevState.obj,
+                preview: server.urls.regular,
+                // update value of specific key
+            }
+
+        }))
     }
 
     renderHeader = () => {
@@ -336,8 +478,7 @@ export default class FormMemo extends Component {
         return (
             <View style={{ flex: 0 }}>
                 {/* <Image resizeMode="contain" source={{uri: connection.icon}} /> */}
-                <ImageBackground style={[styles.flex, styles.destination, styles.shadow]} imageStyle={{ borderRadius: 20 }}
-                    source={{ uri: connection.urls.regular }}>
+                <ImageBackground style={[styles.flex, styles.destination, styles.shadow]} imageStyle={{ borderRadius: 20 }} source={{ uri: connection.urls.regular }}>
                     <Text style={{ color: lightColors.background, margin: 10, fontSize: sizes.h3 }}>{connection.alt_description}</Text>
                 </ImageBackground>
 
@@ -359,15 +500,39 @@ export default class FormMemo extends Component {
         );
     }
 
+    toggleAlert = () => {
+        /*
+        * setState will change the state of the context
+        */
+        this.state.obj.alert ? this.setState(prevState => ({
+            // copy all other key-value pairs of food object
+            obj: {
+                ...prevState.obj,
+                alert: false,
+                // update value of specific key
+            }
+
+        })) : this.setState(prevState => ({
+            // copy all other key-value pairs of food object
+            obj: {
+                ...prevState.obj,
+                alert: true,
+                // update value of specific key
+            }
+
+        }));
+    }
+
     renderSwitches = () => {
         const switchComponents = (
             <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', padding: 16 }}    >
                 <Text style={{ color: '#d7dbdd' }}>Alerts</Text>
                 <Switch trackColor={{ false: "#767577", true: "#616c80" }}
-                // thumbColor={isDark ? "#283747" : "#d7dbdd"}
-                //value={isDark}
+                     thumbColor={this.state.obj.alert ? "#283747" : "#d7dbdd"}
+                    
+                    value={this.state.obj.alert}
 
-                //  onValueChange={toggleScheme} 
+                    onValueChange={this.toggleAlert}
                 />
             </View>
         )
@@ -380,6 +545,9 @@ export default class FormMemo extends Component {
     }
 
     renderInputs = () => {
+
+
+
 
         return (
 
@@ -396,7 +564,17 @@ export default class FormMemo extends Component {
                     autoCorrect={false}
                     keyboardType='default'
                     placeholder="Eg. OktoberFest..."
-                // onChangeText={text => this.setState({ email: text })}  
+                    //  onChangeText={text =>  this.setState({ name : text })}
+                    onChangeText={text => this.setState(prevState => ({
+                        // copy all other key-value pairs of food object
+                        obj: {                     // specific object of food object
+                            ...prevState.obj,
+
+                            title: text,
+                            // update value of specific key
+                        }
+                    }))}
+
                 />
             </View>
 
@@ -420,15 +598,21 @@ export default class FormMemo extends Component {
                     autoCorrect={false}
                     keyboardType='default'
                     placeholder="Eg. Bla Bla Bla..."
-                // onChangeText={text => this.setState({ email: text })}  
+                    // onChangeText={text => this.setState({ email: text })}  
+                    onChangeText={text => this.setState(prevState => ({
+                        // copy all other key-value pairs of food object
+                        obj: {                     // specific object of food object
+                            ...prevState.obj,
+
+                            description: text,
+                            // update value of specific key
+                        }
+                    }))}
                 />
             </View>
 
         );
     }
-
-
-
 
     renderNotes = () => {
 
@@ -447,8 +631,17 @@ export default class FormMemo extends Component {
                     autoCorrect={false}
                     keyboardType='default'
                     placeholder="Eg. Dont Forget..."
-                    editable={false}
-                
+                    // editable={false}
+                    onChangeText={text => this.setState(prevState => ({
+                        // copy all other key-value pairs of food object
+                        obj: {                     // specific object of food object
+                            ...prevState.obj,
+
+                            notes: text,
+                            // update value of specific key
+                        }
+                    }))}
+
                 // onChangeText={text => this.setState({ email: text })}  
                 />
             </View>
@@ -506,7 +699,6 @@ export default class FormMemo extends Component {
                             refreshControl={
                                 <RefreshControl
                                     refreshing={this.state.isRefreshing}
-
                                 // onRefresh={this.onRefresh}
                                 />
                             }
@@ -525,6 +717,7 @@ export default class FormMemo extends Component {
 
                             // scrollEventThrottle={16}
                             // bounces={false}
+
                             horizontal={toggleHorizontal}
                         />
 
@@ -535,7 +728,6 @@ export default class FormMemo extends Component {
             </Modal>
         );
     }
-
 
 
     render() {
@@ -549,26 +741,87 @@ export default class FormMemo extends Component {
 
                     {this.renderInputs()}
                     {this.renderDescription()}
-                    <Time />
+                    {/*<Time /> */}
+
+
+
+
+
+
+                    <View style={{ flex: 0 }} margin={sizes.base}>
+                        <View style={{ flex: 0 }} >
+                            <Text style={{ color: '#9DA3B4' }}>Time</Text>
+                        </View>
+                        <View>
+                            <View>
+
+                                <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', padding: 16 }}    >
+                                    <Text style={{ color: '#d7dbdd' }}>Date</Text>
+                                    <TouchableOpacity onPress={() => this.showDatepicker()} title="Show date picker!" ><Text style={{ color: '#d7dbdd' }}> {this.state.obj.date.toDateString()}</Text></TouchableOpacity>
+                                    <TouchableOpacity onPress={() => this.showDatepicker()} title="Show date picker!" ><MaterialCommunityIcons name="calendar-clock" color={lightColors.primary} size={30} /></TouchableOpacity>
+                                </View>
+                            </View>
+                            <View>
+
+                                <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', padding: 16 }}    >
+                                    <Text style={{ color: '#d7dbdd' }}>Time</Text>
+                                    <TouchableOpacity onPress={() => this.showTimepicker()} title="Show time picker!" ><Text style={{ color: '#d7dbdd' }}>{this.state.obj.date.toLocaleTimeString()}</Text></TouchableOpacity>
+                                    <TouchableOpacity onPress={() => this.showTimepicker()} title="Show time picker!" ><MaterialCommunityIcons name="timer" color={lightColors.primary} size={30} /></TouchableOpacity>
+                                </View>
+
+
+                            </View>
+                            {this.state.show && (
+                                <DateTimePicker
+                                    testID="dateTimePicker"
+                                    value={this.state.obj.date}
+                                    mode={this.state.mode}
+                                    is24Hour={true}
+                                    display="spinner"
+                                    onChange={this.onChange}
+                                    neutralButtonLabel="clear"
+                                    style={{ flex: 1 }}
+
+                                />
+                            )}
+                        </View>
+                    </View>
+
+
+
+
+
+
+
+
+
+
                     <View style={{}} style={styles.divider} ></View>
 
                     {this.renderSwitches()}
                     {this.renderNotes()}
                     <View style={{}} style={styles.divider} ></View>
-                 
+
+                    <View style={{ flex: 0 }} >
                         <View style={{ flex: 0 }} >
-                            <View style={{ flex: 0 }} >
-                                <Text style={{ color: '#9DA3B4' }}>Background</Text>
-                            </View>
-                            <View  style={{ margin: 16 * 2}} ></View>
-                            <TouchableOpacity onPress={() => this.setState({ showServers: true })}>
-                                {this.renderServer()}
-                            </TouchableOpacity>
+                            <Text style={{ color: '#9DA3B4' }}>Background</Text>
                         </View>
-                        <View style={{}} style={styles.divider} ></View>
-                        
-                        <View style={{ flex: 1 ,  margin: 16 * 3 }} ><Button onPress={() => console.log('Pressed')} title="Done" /></View>
-                      
+                        <View style={{ margin: 16 * 2 }} ></View>
+                        <TouchableOpacity onPress={() => this.setState({ showServers: true })}>
+                            {this.renderServer()}
+                        </TouchableOpacity>
+                    </View>
+                    <View style={{}} style={styles.divider} ></View>
+                    {/*   <View style={{ flex: 0 }} >
+                        <Text style={{ color: '#9DA3B4' }}>{memo}</Text>
+        </View> */}
+
+                    <View style={{ flex: 1, margin: 16 * 3 }} ><Button onPress={() =>
+
+                        this.validateForm()
+
+                    } /*console.log('Pressed') */ title="Done" /></View>
+
 
                 </ScrollView>
                 {this.renderServers()}

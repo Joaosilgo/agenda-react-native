@@ -20,7 +20,6 @@
     "privacy": "public",
     "androidNavigationBar": {
       "barStyle": "light-content"
-    
     },
     "assetBundlePatterns": [
       "**/*"
@@ -30,9 +29,10 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/react-logo.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.joaosgomes.agendareactnative"
     },
     "web": {
       "favicon": "./assets/favicon.png"

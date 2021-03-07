@@ -1,6 +1,8 @@
 
 # Agenda
 
+[Download APK](https://expo.io/accounts/joaosgomes/projects/agenda-react-native)
+
 ````json
 "dependencies": {
     "@gorhom/bottom-sheet": "^2.0.4",

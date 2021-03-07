@@ -8,7 +8,7 @@ export const lightColors = {
 
 // Dark theme colors
 export const darkColors = {
-  background: '#F1F1F1',
+  background: '#808080',
   primary: '#283747',
   text: '#283747',
   error: '#283747',

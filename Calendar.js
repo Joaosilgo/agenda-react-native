@@ -4,6 +4,9 @@ import { Agenda } from 'react-native-calendars';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 
+import { sizes, lightColors } from "./colorThemes";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 
 export default class AgendaScreen extends Component {
@@ -11,10 +14,47 @@ export default class AgendaScreen extends Component {
         super(props);
 
         this.state = {
-            items: {}
+            items: {},
+
+            data: {
+                '2021-03-06': [{ name: 'item 1 - any js object' }],
+                '2021-03-07': [{ name: 'item 2 - any js object', height: 80 }],
+                '2021-03-08': [],
+                '2021-03-09': [{ name: 'item 3 - any js object' }, { name: 'any js object' }]
+            }
+
         };
     }
 
+    importData = async () => {
+        try {
+            const data = [];
+            let keys = await AsyncStorage.getAllKeys();
+            for (let inKey of keys) {
+                let obj = await AsyncStorage.getItem(inKey);
+                obj = JSON.parse(obj);
+
+                const DATE = this.formatDate(obj.date);
+
+                const newAgendaObject = {
+                    [DATE]: [{
+                        id: DATE,
+                        name: obj.title,
+                        height: 100
+
+                    }],
+                }
+
+
+                data.push(newAgendaObject);
+            }
+            console.log(data)
+            return data;
+
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
 
 
@@ -22,9 +62,10 @@ export default class AgendaScreen extends Component {
     render() {
 
 
-
+       // console.log(this.state.items);
 
         return (
+
             <View style={{ flex: 1 }}>
 
                 <Agenda
@@ -43,6 +84,7 @@ export default class AgendaScreen extends Component {
                     // Callback that gets called when items for a certain month should be loaded (month became visible)
                     //  loadItemsForMonth={(month) => { console.log('trigger items loading') }}
                     loadItemsForMonth={this.loadItems.bind(this)}
+
                     // Callback that fires when the calendar is opened or closed
                     onCalendarToggled={(calendarOpened) => { console.log(calendarOpened) }}
                     // Callback that gets called on day press
@@ -88,7 +130,7 @@ export default class AgendaScreen extends Component {
                     // Hide knob button. Default = false
                     hideKnob={false}
                     // By default, agenda dates are marked if they have at least one item, but you can override this if needed
-                    
+
                     markedDates={{
                         '2021-01-16': { selected: true, marked: true, startingDay: true },
                         '2021-01-17': { marked: true },
@@ -127,7 +169,7 @@ export default class AgendaScreen extends Component {
 
                     }}
                     // Agenda container style
-                   
+
                     style={{
 
                         //height: 20
@@ -135,8 +177,8 @@ export default class AgendaScreen extends Component {
                     }}
                 />
 
-                <TouchableOpacity onPress={() => console.log('Pressed')} style={{ backgroundColor:'white', position:'absolute',borderRadius:50, width:50, height:50 , zIndex:50, right:20 , bottom:20, alignItems:'center', elevation:20}} >
-                <AntDesign name="pluscircle" color='#283747' size={50} />
+                <TouchableOpacity onPress={() => this.props.navigation.navigate('Form')} style={{ backgroundColor: 'white', position: 'absolute', borderRadius: 50, width: 50, height: 50, zIndex: 50, right: 20, bottom: 20, alignItems: 'center', elevation: 20 }} >
+                    <AntDesign name="pluscircle" color='#283747' size={50} />
                 </TouchableOpacity>
             </View>
 
@@ -145,11 +187,20 @@ export default class AgendaScreen extends Component {
 
 
 
+
+
     loadItems(day) {
         setTimeout(() => {
+
+
+        
+
             for (let i = -15; i < 85; i++) {
                 const time = day.timestamp + i * 24 * 60 * 60 * 1000;
                 const strTime = this.timeToString(time);
+
+              
+
                 if (!this.state.items[strTime]) {
                     this.state.items[strTime] = [];
                     const numItems = Math.floor(Math.random() * 3 + 1);
@@ -164,6 +215,7 @@ export default class AgendaScreen extends Component {
             const newItems = {};
             Object.keys(this.state.items).forEach(key => {
                 newItems[key] = this.state.items[key];
+
             });
             this.setState({
                 items: newItems
@@ -171,6 +223,38 @@ export default class AgendaScreen extends Component {
         }, 1000);
     }
 
+
+
+    loadItems(day) {
+        
+            for (let i = -15; i < 85; i++) {
+                const time = day.timestamp + i * 24 * 60 * 60 * 1000;
+                const strTime = this.timeToString(time);
+                console.log(strTime);
+                if (!this.state.items[strTime]) {
+                    this.state.items[strTime] = [];
+                    const numItems = Math.floor(Math.random() * 3 + 1);
+                    for (let j = 0; j < numItems; j++) {
+                        this.state.items[strTime].push({
+                            name: 'Item for ' + strTime + ' #' + j,
+                            height: Math.max(50, Math.floor(Math.random() * 150))
+                        });
+                    }
+                }
+            }
+            const newItems = {};
+            Object.keys(this.state.items).forEach(key => {
+                newItems[key] = this.state.items[key];
+
+            });
+            this.setState({
+                items: newItems
+            });
+       
+    }
+
+
+   
 
 
     timeToString(time) {
@@ -184,7 +268,7 @@ export default class AgendaScreen extends Component {
     renderItem(item) {
         return (
             <TouchableOpacity style={[styles.item, { height: item.height }]} onPress={() => Alert.alert(item.name)}>
-                <Text>{item.name}</Text>
+                <Text style={styles.textStyle} >{item.name}</Text>
             </TouchableOpacity>
         );
     }
@@ -192,12 +276,14 @@ export default class AgendaScreen extends Component {
 
     renderEmptyDate() {
         return (
-            <TouchableOpacity>
-                <MaterialCommunityIcons name="exclamation-thick" size={30} color="#283747" />
-                <Text style={styles.textStyle}>No services on this date</Text>
+            <TouchableOpacity style={[styles.item, {}]}>
+                <MaterialCommunityIcons name="exclamation-thick" size={15} color="#283747" />
+                <Text style={styles.textStyle}>Wow, Look! Nothing!</Text>
             </TouchableOpacity>
         );
     }
+
+
 
 
     renderKnobIcon() {
@@ -247,8 +333,13 @@ const styles = StyleSheet.create({
         height: 50
     },
     textStyle: {
-        fontSize: 18,
-        margin: 5
+        //fontSize: 18,
+        margin: 5,
+        color: '#283747',
+        fontSize: sizes.font,
+        fontWeight: "500",
+        color: '#283747',
+
     }
 
 });

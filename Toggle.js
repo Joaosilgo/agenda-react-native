@@ -4,6 +4,7 @@ import { Switch, View } from 'react-native';
 import { useTheme } from './ThemeContext';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
+
 export const Toggle = () => {
     // We're also pulling setScheme here!
     const { setScheme, isDark } = useTheme();
