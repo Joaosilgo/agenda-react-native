@@ -1,7 +1,38 @@
 
 # Agenda
 
-[Download APK](https://expo.io/accounts/joaosgomes/projects/agenda-react-native)
+<div class="row" >
+
+<img src='https://github.com/Joaosilgo/agenda-react-native/blob/media/assets/Screenshot_20210310-082606.jpg?raw=true' width="20%" />
+
+<img src='https://github.com/Joaosilgo/agenda-react-native/blob/media/assets/Screenshot_20210310-082631.jpg?raw=true' width="20%" />
+
+<img src='https://github.com/Joaosilgo/agenda-react-native/blob/media/assets/Screenshot_20210310-082638.jpg?raw=true' width="20%" />
+
+<img src='https://github.com/Joaosilgo/agenda-react-native/blob/media/assets/Screenshot_20210310-082733.jpg?raw=true' width="20%" />
+
+<img src='https://github.com/Joaosilgo/agenda-react-native/blob/media/assets/Screenshot_20210310-082754.jpg?raw=true' width="20%" />
+
+<img src='https://github.com/Joaosilgo/agenda-react-native/blob/media/assets/Screenshot_20210310-082817.jpg?raw=true' width="20%" />
+
+<img src='https://github.com/Joaosilgo/agenda-react-native/blob/media/assets/Screenshot_20210310-082824.jpg?raw=true' width="20%" />
+
+<img src='https://github.com/Joaosilgo/agenda-react-native/blob/media/assets/Screenshot_20210514-122107.jpg?raw=true' width="20%" />
+
+<img src='https://github.com/Joaosilgo/agenda-react-native/blob/media/assets/Screenshot_20210514-122117.jpg?raw=true' width="20%" />
+
+<img src='https://github.com/Joaosilgo/agenda-react-native/blob/media/assets/Screenshot_20210514-122126.jpg?raw=true' width="20%" />
+
+<img src='https://github.com/Joaosilgo/agenda-react-native/blob/media/assets/Screenshot_20210514-122138.jpg?raw=true' width="20%" />
+
+
+ 
+ 
+ </div>
+
+
+
+## [Download APK 📒](https://drive.google.com/file/d/1kv76W-U7VQGOrCRMKOQCPIn4MU6dqXx1/view?usp=sharing)
 
 ````json
 "dependencies": {
