@@ -1,6 +1,8 @@
 
 # Agenda
 
+[![Build Android](https://github.com/Joaosilgo/agenda-react-native/actions/workflows/main.yml/badge.svg)](https://github.com/Joaosilgo/agenda-react-native/actions/workflows/main.yml)
+
 <div class="row" >
 
 <img src='https://github.com/Joaosilgo/agenda-react-native/blob/media/assets/Screenshot_20210310-082606.jpg?raw=true' width="20%" />
